@@ -1546,11 +1546,10 @@ async function startScraping(urls, maxConcurrency) {
   for (let url of urls) {
     cluster.queue({ url, cluster }, scrapePage);
   }
-  //cluster.emit()
 
   cluster.on("taskfinished", async (links, html) => {
-    console.log(links);
-    console.log(html);
+    //  console.log(links);
+    //console.log(html);
     unknownErrors.push({
       rowNo: 0,
       name: "http://domain.com",
@@ -1578,6 +1577,7 @@ async function startScraping(urls, maxConcurrency) {
   //     await cluster.queue({ url, cluster }, scrapePage);
   //   }
   // }
+  console.log(unknownErrors);
 
   await cluster.idle();
   await cluster.close();
