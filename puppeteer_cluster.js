@@ -1577,7 +1577,7 @@ async function startScraping(urls, maxConcurrency) {
   //     await cluster.queue({ url, cluster }, scrapePage);
   //   }
   // }
-  console.log(unknownErrors);
+  console.log("unknownErrors=", unknownErrors);
 
   await cluster.idle();
   await cluster.close();
