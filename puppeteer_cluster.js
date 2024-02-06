@@ -1555,6 +1555,7 @@ async function startScraping(urls, maxConcurrency) {
     maxConcurrency: maxConcurrency,
     puppeteerOptions: { headless: "new", ignoreHTTPSErrors: true },
     monitor: true,
+    timeout: 5000,
   });
 
   for (let url of urls) {
