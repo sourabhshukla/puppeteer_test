@@ -1533,6 +1533,8 @@ async function scrapePage({ page, data: { url, cluster } }) {
 }
 
 async function startScraping(urls, maxConcurrency) {
+  const unknownErrors = [];
+
   const cluster = await Cluster.launch({
     concurrency: Cluster.CONCURRENCY_CONTEXT,
     maxConcurrency: maxConcurrency,
@@ -1549,24 +1551,14 @@ async function startScraping(urls, maxConcurrency) {
   cluster.on("taskfinished", async (links, html) => {
     console.log(links);
     console.log(html);
-    //console.log(task);
-    // console.log(`Finished processing ${task}`);
-    // console.log("i=", ++i);
-    // Add another web page to the queue if available
-    //const nextUrl = urls.shift();
-    // console.log("length=", urls.length);
-    // if (nextUrl) {
-    //   //console.log(`Adding ${nextUrl} to the queue for scraping.`);
-    //   await cluster.queue({ url: nextUrl, cluster }, scrapePage);
-    // }
-    // If all URLs are processed, close the cluster
-    // if (i === 20) {
-    //   await cluster.close();
-    // }
   });
 
   cluster.on("taskerror", (err, data) => {
-    // console.log(err);
+    unknownErrors.push({
+      rowNo: 0,
+      name: "http://domain.com",
+      message: "script not found after getting script exits error",
+    });
   });
 
   cluster.on("taskfailed", (task, error) => {
