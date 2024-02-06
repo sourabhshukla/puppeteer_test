@@ -1506,7 +1506,6 @@ const temp = [
 let millionWebPageUrls = [];
 
 for (let i = 0; i < 1; i++) {
-  console.log(i);
   millionWebPageUrls = millionWebPageUrls.concat(temp);
 }
 
@@ -1549,6 +1548,7 @@ async function startScraping(urls, maxConcurrency) {
 
   cluster.on("taskfinished", async (links, html) => {
     console.log(links);
+    console.log(html);
     //console.log(task);
     // console.log(`Finished processing ${task}`);
     // console.log("i=", ++i);
