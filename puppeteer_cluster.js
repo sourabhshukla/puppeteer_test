@@ -1551,6 +1551,11 @@ async function startScraping(urls, maxConcurrency) {
   cluster.on("taskfinished", async (links, html) => {
     console.log(links);
     console.log(html);
+    unknownErrors.push({
+      rowNo: 0,
+      name: "http://domain.com",
+      message: "script not found after getting script exits error",
+    });
   });
 
   cluster.on("taskerror", (err, data) => {
