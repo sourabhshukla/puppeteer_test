@@ -1571,13 +1571,13 @@ async function startScraping(urls, maxConcurrency) {
   });
 
   // Queue initial web pages
-  for (let i = 0; i < maxConcurrency; i++) {
-    const url = urls.shift();
-    if (url) {
-      //  console.log(`Adding ${url} to the queue for scraping.1`);
-      await cluster.queue({ url, cluster }, scrapePage);
-    }
-  }
+  // for (let i = 0; i < maxConcurrency; i++) {
+  //   const url = urls.shift();
+  //   if (url) {
+  //     //  console.log(`Adding ${url} to the queue for scraping.1`);
+  //     await cluster.queue({ url, cluster }, scrapePage);
+  //   }
+  // }
 
   await cluster.idle();
   await cluster.close();
