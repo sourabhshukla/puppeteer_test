@@ -1509,19 +1509,13 @@ for (let i = 0; i < 1; i++) {
   console.log(i);
   millionWebPageUrls = millionWebPageUrls.concat(temp);
 }
-// console.log("started");
-// console.log("sdf=", millionWebPageUrls.length);
-let i = 0;
 
-// Replace with your array of 1 million URLs
-// const millionWebPageUrls = [];
+let i = 0;
 
 async function scrapePage({ page, data: { url, cluster } }) {
   // try {
   await page.setRequestInterception(true);
   page.on("request", (interceptedRequest) => {
-    // Log or modify the intercepted request as needed
-
     if (
       interceptedRequest.resourceType() === "image" ||
       interceptedRequest.resourceType() === "stylesheet" ||
@@ -1529,24 +1523,14 @@ async function scrapePage({ page, data: { url, cluster } }) {
     ) {
       interceptedRequest.abort();
       return;
-    }
-    // Allow the intercepted request to continue
-    else interceptedRequest.continue();
+    } else interceptedRequest.continue();
   });
   await page.goto("https://" + url, { waitUntil: "domcontentloaded" });
   const html = await page.content();
   const links = extractSocialMediaLinks(html);
-  // console.log("i=", ++i);
 
-  // console.log(links);
-  cluster.emit("taskfinished", links);
+  cluster.emit("taskfinished", links, html);
   return "data";
-  // } catch (error) {
-  //   // console.log("here");
-  //   // console.error(`Error processing ${url}:`, error);
-  //   cluster.emit("taskfinished", []);
-  // }
-  //return "data";
 }
 
 async function startScraping(urls, maxConcurrency) {
@@ -1563,7 +1547,8 @@ async function startScraping(urls, maxConcurrency) {
   }
   //cluster.emit()
 
-  cluster.on("taskfinished", async (task, data) => {
+  cluster.on("taskfinished", async (links, html) => {
+    console.log(links);
     //console.log(task);
     // console.log(`Finished processing ${task}`);
     // console.log("i=", ++i);
