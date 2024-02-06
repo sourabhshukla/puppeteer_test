@@ -1647,4 +1647,4 @@ function isTikTokLink(url) {
   return url.includes("tiktok.com");
 }
 
-startScraping(millionWebPageUrls, 10);
+startScraping(millionWebPageUrls, 2);
