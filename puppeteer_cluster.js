@@ -1553,7 +1553,7 @@ async function startScraping(urls, maxConcurrency) {
   const cluster = await Cluster.launch({
     concurrency: Cluster.CONCURRENCY_CONTEXT,
     maxConcurrency: maxConcurrency,
-    puppeteerOptions: { headless: true, ignoreHTTPSErrors: true },
+    puppeteerOptions: { headless: "new", ignoreHTTPSErrors: true },
     monitor: true,
   });
 
