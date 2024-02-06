@@ -1580,6 +1580,7 @@ async function startScraping(urls, maxConcurrency) {
   console.log("unknownErrors=", unknownErrors);
 
   await cluster.idle();
+  console.log("unknownErrors=", unknownErrors);
   await cluster.close();
 }
 
@@ -1630,4 +1631,4 @@ function isTikTokLink(url) {
   return url.includes("tiktok.com");
 }
 
-startScraping(millionWebPageUrls, 2);
+startScraping(millionWebPageUrls.slice(0, 50), 2);
