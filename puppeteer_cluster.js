@@ -1512,24 +1512,30 @@ for (let i = 0; i < 1; i++) {
 let i = 0;
 
 async function scrapePage({ page, data: { url, cluster } }) {
-  // try {
-  await page.setRequestInterception(true);
-  page.on("request", (interceptedRequest) => {
-    if (
-      interceptedRequest.resourceType() === "image" ||
-      interceptedRequest.resourceType() === "stylesheet" ||
-      interceptedRequest.resourceType() === "font"
-    ) {
-      interceptedRequest.abort();
-      return;
-    } else interceptedRequest.continue();
-  });
-  await page.goto("https://" + url, { waitUntil: "domcontentloaded" });
-  const html = await page.content();
-  const links = extractSocialMediaLinks(html);
+  try {
+    await page.setRequestInterception(true);
+    page.on("request", (interceptedRequest) => {
+      if (
+        interceptedRequest.resourceType() === "image" ||
+        interceptedRequest.resourceType() === "stylesheet" ||
+        interceptedRequest.resourceType() === "font"
+      ) {
+        interceptedRequest.abort();
+        return;
+      } else interceptedRequest.continue();
+    });
+    // console.time("https://" + url);
+    await page.goto("https://" + url, { waitUntil: "domcontentloaded" });
+    //console.timeEnd("https://" + url);
+    const html = await page.content();
+    const links = extractSocialMediaLinks(html);
 
-  cluster.emit("taskfinished", links, html);
-  return "data";
+    cluster.emit("taskfinished", links, html);
+    return "data";
+  } catch (e) {
+    // console.timeEnd("https://" + url);
+    cluster.emit("taskerror", e);
+  }
 }
 
 async function startScraping(urls, maxConcurrency) {
@@ -1540,7 +1546,7 @@ async function startScraping(urls, maxConcurrency) {
     maxConcurrency: maxConcurrency,
     puppeteerOptions: { headless: "new", ignoreHTTPSErrors: true },
     monitor: true,
-    timeout: 5000,
+    timeout: 30000,
   });
 
   for (let url of urls) {
@@ -1548,13 +1554,14 @@ async function startScraping(urls, maxConcurrency) {
   }
 
   cluster.on("taskfinished", async (links, html) => {
-    //  console.log(links);
-    //console.log(html);
     unknownErrors.push({
       rowNo: 0,
       name: "http://domain.com",
       message: "script not found after getting script exits error",
     });
+    // const domainScripts = html
+    //   ? Array.from(new Set(this.getScripts(html, domain)))
+    //   : [];
   });
 
   cluster.on("taskerror", (err, data) => {
@@ -1566,7 +1573,7 @@ async function startScraping(urls, maxConcurrency) {
   });
 
   cluster.on("taskfailed", (task, error) => {
-    console.error(`Failed processing ${task.data}:`, error);
+    //console.error(`Failed processing ${task.data}:`, error);
   });
 
   // Queue initial web pages
@@ -1577,10 +1584,10 @@ async function startScraping(urls, maxConcurrency) {
   //     await cluster.queue({ url, cluster }, scrapePage);
   //   }
   // }
-  console.log("unknownErrors=", unknownErrors);
+  //console.log("unknownErrors=", unknownErrors);
 
   await cluster.idle();
-  console.log("unknownErrors=", unknownErrors);
+  //  console.log("unknownErrors=", unknownErrors);
   await cluster.close();
 }
 
@@ -1631,4 +1638,25 @@ function isTikTokLink(url) {
   return url.includes("tiktok.com");
 }
 
-startScraping(millionWebPageUrls.slice(0, 50), 2);
+function getScripts(html, domain) {
+  const scriptUrls = [];
+
+  const $ = load(html);
+  const scriptTags = $("script");
+  scriptTags.each((index, element) => {
+    const src = $(element).attr("src");
+    if (src && !src.includes(domain)) {
+      try {
+        const url = new URL(src);
+        const urlWithoutParams = `${url.origin}${url.pathname}`;
+        scriptUrls.push(urlWithoutParams);
+      } catch (error) {
+        //
+      }
+    }
+  });
+
+  return scriptUrls;
+}
+
+startScraping(millionWebPageUrls, 30);
