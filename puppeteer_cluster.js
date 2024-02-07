@@ -1659,4 +1659,4 @@ function getScripts(html, domain) {
   return scriptUrls;
 }
 
-startScraping(millionWebPageUrls, 30);
+startScraping(millionWebPageUrls, 50);
