@@ -8,8 +8,8 @@ AWS.config.update({
   //   accessKeyId: "AKIAXYKJUKMZMVZ7LQ5V",
   //   secretAccessKey: "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",
   region: "us-east-1",
-  accessKeyId: "AKIAQIMXWD5CWE7MVUGB",
-  secretAccessKey: "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",
+  accessKeyId: "AKIAQIMXWD5CTDEQVLCH",
+  secretAccessKey: "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",
 });
 
 const ec2 = new AWS.EC2();
